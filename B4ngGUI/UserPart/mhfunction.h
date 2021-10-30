@@ -3,6 +3,34 @@
 #include <vector>
 #include <string>
 
+typedef struct _MH_BASE_ADDRESS
+{
+  uint32_t player_IP_address = NULL;
+  uint32_t player_HP_address = NULL;
+  uint32_t player_MP_address = NULL;
+  uint32_t player_AP_address = NULL;
+  uint32_t player_EXP_address = NULL;
+
+  uint32_t pet_HP_address = NULL;
+  uint32_t pet_MP_address = NULL;
+  uint32_t pet_EXP_address = NULL;
+
+  uint32_t tab_address = NULL;
+
+  uint32_t alt_e_address = NULL;
+  uint32_t alt_w_address = NULL;
+  uint32_t alt_q_new_address = NULL;
+  uint32_t alt_q_ori_address = NULL;
+  uint32_t alt_f_address = NULL;
+
+  uint32_t quick_mission_address = NULL;
+
+  uint32_t dialog_box_address = NULL;
+
+}MH_BASE_ADDRESS, * PMH_BASE_ADDRESS;
+
+void initial_base_address(uint32_t process_id, PMH_BASE_ADDRESS base_address);
+
 std::string string_to_utf8(std::string input);
 
 bool mhmain_window_detection(PWINDOWS_HANDLE windows_handle);

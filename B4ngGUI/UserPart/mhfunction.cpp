@@ -1,6 +1,94 @@
 #include "mhfunction.h"
 #include "../misc/offsets/offsets.h"
 
+void initial_base_address(uint32_t process_id, HWND hwnd, PMH_BASE_ADDRESS base_address)
+{
+  if (base_address->player_IP_address == NULL)
+  {
+    uint32_t* address_list = (uint32_t*)malloc(2000 * sizeof(uint32_t));
+    uint32_t address_list_length = 0;
+    FindAddressByValue(process_id, 0, memory_start_address, memory_end_address, base_player_start_address, &address_list, &address_list_length);
+    for (size_t i = 0; i < address_list_length; i++)
+    {
+      uint32_t feature_0x18 = Read<uint32_t>(process_id, address_list[i] + 0x18);
+      uint32_t feature_0x1C = Read<uint32_t>(process_id, address_list[i] + 0x1C);
+      uint32_t feature_0xDC = Read<uint32_t>(process_id, address_list[i] + 0xDC);
+      if (feature_0x18 == player_IP_0x18_800x600 &&
+        feature_0x1C == player_IP_0x1C_800x600 &&
+        feature_0xDC == player_IP_0xDC_800x600)
+      {
+        base_address->player_IP_address = address_list[i];
+        continue;
+      }
+
+      if (feature_0x18 == player_HP_0x18_800x600 &&
+        feature_0x1C == player_HP_0x1C_800x600 &&
+        feature_0xDC == player_HP_0xDC_800x600)
+      {
+        base_address->player_HP_address = address_list[i];
+        continue;
+      }
+
+      if (feature_0x18 == player_MP_0x18_800x600 &&
+          feature_0x1C == player_MP_0x1C_800x600)
+      {
+        base_address->player_MP_address = address_list[i];
+        continue;
+      }
+
+      if (feature_0x18 == player_AP_0x18_800x600 &&
+        feature_0x1C == player_AP_0x1C_800x600)
+      {
+        base_address->player_AP_address = address_list[i];
+        continue;
+      }
+
+      if (feature_0x18 == player_EXP_0x18_800x600 &&
+        feature_0x1C == player_EXP_0x1C_800x600)
+      {
+        base_address->player_EXP_address = address_list[i];
+        continue;
+      }
+
+      if (feature_0x18 == pet_HP_0x18_800x600 &&
+        feature_0x1C == pet_HP_0x1C_800x600)
+      {
+        base_address->pet_HP_address = address_list[i];
+        continue;
+      }
+
+      if (feature_0x18 == pet_MP_0x18_800x600 &&
+        feature_0x1C == pet_MP_0x1C_800x600)
+      {
+        base_address->pet_MP_address = address_list[i];
+        continue;
+      }
+
+      if (feature_0x18 == pet_EXP_0x18_800x600 &&
+        feature_0x1C == pet_EXP_0x1C_800x600)
+      {
+        base_address->pet_EXP_address = address_list[i];
+        continue;
+      }
+    }
+    free(address_list);
+  }
+
+  if (base_address->tab_address == NULL)
+  {
+    uint32_t* address_list = (uint32_t*)malloc(2000 * sizeof(uint32_t));
+    uint32_t address_list_length = 0;
+    FindAddressByValue(process_id, 0, memory_start_address, memory_end_address, map_start_address, &address_list, &address_list_length);
+    for (size_t i = 0; i < address_list_length; i++)
+    {
+      
+    }
+
+    free(address_list);
+  }
+
+}
+
 std::string string_to_utf8(std::string input)
 {
   int size = MultiByteToWideChar(CP_ACP, MB_COMPOSITE, input.c_str(),
@@ -93,19 +181,13 @@ void get_player_pos(uint32_t procees_id, float* player_x, float* player_y)
 
 void get_click_NPC_name(uint32_t process_id, char* clicked_name)
 {
-  uint32_t clicked_name_base = Read<uint32_t>(process_id, 0x11000000 + 0x01B941D4 + 0x2020);
-  uint32_t clicked_name_base_1 = Read<uint32_t>(process_id, clicked_name_base + 0x2C);
-  uint32_t clicked_name_base_2 = Read<uint32_t>(process_id, clicked_name_base_1 + 0x78);
-  uint32_t clicked_name_base_3 = Read<uint32_t>(process_id, clicked_name_base_2 + 0x0);
-  uint32_t clicked_name_base_4 = Read<uint32_t>(process_id, clicked_name_base_3 + 0x64);
-  uint32_t clicked_name_base_5 = Read<uint32_t>(process_id, clicked_name_base_4 + 0xC);
-  uint32_t clicked_name_base_6 = Read<uint32_t>(process_id, clicked_name_base_5 + 0x50);
-  uint32_t clicked_name_base_7 = Read<uint32_t>(process_id, clicked_name_base_6 + 0x8);
-  uint32_t clicked_name_base_8 = Read<uint32_t>(process_id, clicked_name_base_7 + 0x20);
+  uint32_t clicked_name_base = get_address_value(process_id, click_NPC_base_address, click_NPC_offset);
   for (size_t i = 0; i < 20; i++)
   {
-    *(clicked_name + i) = Read<char>(process_id, clicked_name_base_8 + 0x14 + i);
+    clicked_name[i] = Read<char>(process_id, clicked_name_base + 0x14 + i);
   }
+  std::string utf8_name = string_to_utf8(clicked_name);
+  memcpy(clicked_name, utf8_name.c_str(), 20);
 }
 
 void get_quick_mission_content(uint32_t process_id, char* mission_content)

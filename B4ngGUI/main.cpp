@@ -153,15 +153,18 @@ int main(int, char**)
       int32_t windows_size_y = 0;
       float player_x = 0;
       float player_y = 0;
+      char click_NPC_name[20];
       //char* quick_mission_content = (char*)malloc(1000 * sizeof(char));
       get_game_mouse_pos(mhtab_windows_handle->main_process_id_list[i], &mouse_x, &mouse_y);
       get_map_info(mhtab_windows_handle->main_process_id_list[i], &map_index, &map_size_x, &map_size_y, &windows_size_x, &windows_size_y);
       get_player_pos(mhtab_windows_handle->main_process_id_list[i], &player_x, &player_y);
+      get_click_NPC_name(mhtab_windows_handle->main_process_id_list[i], click_NPC_name);
       //get_quick_mission_content(mhtab_windows_handle->main_process_id_list[i], quick_mission_content);
       ImGui::Text(u8"(%d, %d) 窗口大小(%d, %d)", mhtab_windows_handle->windows_rect[i].left, mhtab_windows_handle->windows_rect[i].top, windows_size_x, windows_size_y);
       ImGui::Text(u8"鼠标位置：(%d, %d)", mouse_x, mouse_y);
       ImGui::Text(u8"地图：%d, 地图大小：(%d, %d)", map_index, map_size_x, map_size_y);
       ImGui::Text(u8"玩家位置：(%d, %d)", (uint32_t)player_x/20, (uint32_t)(map_size_y - 10 - player_y)/20);
+      ImGui::Text(u8"点击的NPC为：%s", click_NPC_name);
       //ImGui::Text(u8"任务追踪：%s", quick_mission_content);
       ImGui::End();
 
