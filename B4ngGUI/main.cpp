@@ -43,7 +43,7 @@ int main(int, char**)
   //ImGui_ImplWin32_EnableDpiAwareness();
   WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("B4ngGUI"), NULL };
   ::RegisterClassEx(&wc);
-  HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("B4ngTool"), WS_OVERLAPPEDWINDOW, 100, 100, 640, 480, NULL, NULL, wc.hInstance, NULL);
+  HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("B4ngTool"), WS_OVERLAPPEDWINDOW, 100, 100, 800, 600, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
   if (!CreateDeviceD3D(hwnd))
@@ -138,7 +138,7 @@ int main(int, char**)
     for (size_t i = 0; i < mhtab_windows_handle->size; i++)
     {
       ImGui::Begin(name_list[i].c_str());
-      ImGui::Text(u8"(%d, %d) %s", mhtab_windows_handle->windows_rect[i].left, mhtab_windows_handle->windows_rect[i].top, mhtab_windows_handle->main_process_title[i].c_str());
+      ImGui::Text(u8"%s", mhtab_windows_handle->main_process_title[i].c_str());
       ImGui::Text("PID:%d", mhtab_windows_handle->main_process_id_list[i]);
       if (ImGui::Button(u8"置于前面", ImVec2(100, 20)))
       {
@@ -146,9 +146,27 @@ int main(int, char**)
       }
       int32_t mouse_x = 0;
       int32_t mouse_y = 0;
+      int32_t map_index = 0; 
+      int32_t map_size_x = 0;
+      int32_t map_size_y = 0; 
+      int32_t windows_size_x = 0; 
+      int32_t windows_size_y = 0;
+      float player_x = 0;
+      float player_y = 0;
+      //char* quick_mission_content = (char*)malloc(1000 * sizeof(char));
       get_game_mouse_pos(mhtab_windows_handle->main_process_id_list[i], &mouse_x, &mouse_y);
+      get_map_info(mhtab_windows_handle->main_process_id_list[i], &map_index, &map_size_x, &map_size_y, &windows_size_x, &windows_size_y);
+      get_player_pos(mhtab_windows_handle->main_process_id_list[i], &player_x, &player_y);
+      //get_quick_mission_content(mhtab_windows_handle->main_process_id_list[i], quick_mission_content);
+      ImGui::Text(u8"(%d, %d) 窗口大小(%d, %d)", mhtab_windows_handle->windows_rect[i].left, mhtab_windows_handle->windows_rect[i].top, windows_size_x, windows_size_y);
       ImGui::Text(u8"鼠标位置：(%d, %d)", mouse_x, mouse_y);
+      ImGui::Text(u8"地图：%d, 地图大小：(%d, %d)", map_index, map_size_x, map_size_y);
+      ImGui::Text(u8"玩家位置：(%d, %d)", (uint32_t)player_x/20, (uint32_t)(map_size_y - 10 - player_y)/20);
+      //ImGui::Text(u8"任务追踪：%s", quick_mission_content);
       ImGui::End();
+
+      //free memory
+      //free(quick_mission_content);
     }
 
 

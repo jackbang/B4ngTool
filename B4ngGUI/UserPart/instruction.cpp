@@ -240,9 +240,9 @@ void FindAddressByValue(uint32_t procees_id, uint32_t base_address, uint32_t sta
   PMEMORY_BASIC_INFORMATION memory_map_ptr = (PMEMORY_BASIC_INFORMATION)malloc(2000 * sizeof(MEMORY_BASIC_INFORMATION));
   SIZE_T memory_map_length = 0;
 
-  printf("Loading...\n");
+  //printf("Loading...\n");
   generate_memory_map(procees_id, base_address, start_address, end_address, memory_map_ptr, &memory_map_length);
-  printf("Length: %d\n", memory_map_length);
+  //printf("Length: %d\n", memory_map_length);
 
   const uint32_t threads_max = 20;
   std::thread threads[threads_max + 1];

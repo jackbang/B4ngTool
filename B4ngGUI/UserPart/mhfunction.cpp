@@ -1,4 +1,5 @@
 #include "mhfunction.h"
+#include "../misc/offsets/offsets.h"
 
 std::string string_to_utf8(std::string input)
 {
@@ -57,31 +58,37 @@ bool mhmain_window_detection(PWINDOWS_HANDLE windows_handle)
   return true;
 }
 
+uint32_t get_address_value(uint32_t process_id, uint32_t base_address, std::vector<uint32_t> offsets)
+{
+  uint32_t base_address_ptr = Read<uint32_t>(process_id, 0x11000000 + base_address);
+  uint32_t address_0 = base_address_ptr;
+  for (size_t i = 0; i < offsets.size(); i++)
+  {
+    uint32_t address_1 = Read<uint32_t>(process_id, address_0 + offsets[i]);
+    address_0 = address_1;
+  }
+  return address_0;
+}
+
 void get_game_mouse_pos(uint32_t procees_id, int32_t* mouse_x, int32_t* mouse_y)
 {
-  uint32_t mouse_base = Read<uint32_t>(procees_id, 0x11000000 + 0x1B787A4 + 0x2020);
-  *mouse_x = Read<int32_t>(procees_id, mouse_base + 0x80);
-  *mouse_y = Read<int32_t>(procees_id, mouse_base + 0x84);
+  *mouse_x = get_address_value(procees_id, mouse_base_address, mouse_position_offset_x);
+  *mouse_y = get_address_value(procees_id, mouse_base_address, mouse_position_offset_y);
 }
 
 void get_map_info(uint32_t procees_id, int32_t* map_index, int32_t* map_size_x, int32_t* map_size_y, int32_t* windows_size_x, int32_t* windows_size_y)
 {
-  uint32_t map_base = Read<uint32_t>(procees_id, 0x11000000 + 0x19F2030 + 0x2020);
-  *map_index = Read<int32_t>(procees_id, map_base + 0x88 + 0x04);
-  int32_t map_size_ptr = Read<int32_t>(procees_id, map_base + 0x58);
-  *map_size_x = Read<int32_t>(procees_id, map_size_ptr + 0x10);
-  *map_size_y = Read<int32_t>(procees_id, map_size_ptr + 0x14);
-  *windows_size_x = Read<int32_t>(procees_id, map_base + 0xB8);
-  *windows_size_y = Read<int32_t>(procees_id, map_base + 0xBC);
+  *map_index = get_address_value(procees_id, map_base_address, map_index_offset);
+  *map_size_x = get_address_value(procees_id, map_base_address, map_size_offset_x);
+  *map_size_y = get_address_value(procees_id, map_base_address, map_size_offset_y);
+  *windows_size_x = get_address_value(procees_id, map_base_address, windows_size_offset_x);
+  *windows_size_y = get_address_value(procees_id, map_base_address, windows_size_offset_y);
 }
 
 void get_player_pos(uint32_t procees_id, float* player_x, float* player_y)
 {
-  int32_t map_size_Y = 0;
-  get_map_info(procees_id, NULL, NULL, &map_size_Y, NULL, NULL);
-  *player_x = Read<float_t>(procees_id, 0x11000000 + 0x1B788E8 + 0x2020) / 20;
-  float_t player_Y = Read<float_t>(procees_id, 0x11000000 + 0x1B788E8 + 4 + 0x2020);
-  *player_y = (map_size_Y - 10 - player_Y) / 20;
+  *player_x = Read<float_t>(procees_id, 0x11000000 + player_base_address);
+  *player_y = Read<float_t>(procees_id, 0x11000000 + player_base_address + 0x04);
 }
 
 void get_click_NPC_name(uint32_t process_id, char* clicked_name)
@@ -106,7 +113,8 @@ void get_quick_mission_content(uint32_t process_id, char* mission_content)
   const ULONG start_address = 0x01F14000;
   const ULONG end_address = 0x4AD00000;
   const ULONG MISSION_base_value = 0x11F383E8;
-  const ULONG quick_mission_pos_x = 639;
+  const ULONG quick_mission_pos_x_640x480 = 479;
+  const ULONG quick_mission_pos_x_800x640 = 639;
 
   uint32_t* ui_address_list = (uint32_t*)malloc(2000 * sizeof(uint32_t));
   uint32_t ui_address_list_length = 0;
@@ -116,7 +124,7 @@ void get_quick_mission_content(uint32_t process_id, char* mission_content)
   {
     uint32_t feature_value = Read<uint32_t>(process_id, ui_address_list[i] + 0x18);
     //printf("the id %d\r\n", feature_value);
-    if (feature_value == quick_mission_pos_x)
+    if (feature_value == quick_mission_pos_x_640x480)
     {
       uint32_t mission_content_base_0 = Read<uint32_t>(process_id, ui_address_list[i] + 0x60);
       uint32_t mission_content_base_1 = Read<uint32_t>(process_id, mission_content_base_0 + 0x24);
@@ -135,5 +143,8 @@ void get_quick_mission_content(uint32_t process_id, char* mission_content)
       }
     }
   }
+  //printf("%s\r\n", mission_content);
+  std::string utf8_content = string_to_utf8(mission_content);
+  memcpy(mission_content, utf8_content.c_str(), 1000);
 }
 

@@ -80,5 +80,8 @@
     <ClInclude Include="UserPart\mhfunction.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\misc\offsets\offsets.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
