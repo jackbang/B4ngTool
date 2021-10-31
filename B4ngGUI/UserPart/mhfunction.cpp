@@ -1,5 +1,68 @@
 #include "mhfunction.h"
 #include "../misc/offsets/offsets.h"
+#include <stdlib.h>
+#include <time.h> 
+
+void keyboard_input(WORD commond_key, WORD normal_key)
+{
+  if (commond_key == NULL)
+  {
+    INPUT inputs[1] = {};
+    ZeroMemory(inputs, sizeof(inputs));
+    srand((unsigned int)time(NULL));
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = normal_key;
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+    uint32_t delay_time = rand() % 50 + 90;
+    Sleep(delay_time);
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = normal_key;
+    inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+  }
+  else
+  {
+    INPUT inputs[1] = {};
+    ZeroMemory(inputs, sizeof(inputs));
+    srand((unsigned int)time(NULL));
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = commond_key;
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+    uint32_t delay_time = rand() % 20 + 5;
+    Sleep(delay_time);
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = normal_key;
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+    delay_time = rand() % 50 + 90;
+    Sleep(delay_time);
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = normal_key;
+    inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+    delay_time = rand() % 30 + 10;
+    Sleep(delay_time);
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = commond_key;
+    inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+  }
+}
 
 void initial_base_address(uint32_t process_id, HWND hwnd, PMH_BASE_ADDRESS base_address)
 {
@@ -76,17 +139,33 @@ void initial_base_address(uint32_t process_id, HWND hwnd, PMH_BASE_ADDRESS base_
 
   if (base_address->tab_address == NULL)
   {
+    SetForegroundWindow(hwnd);
+    keyboard_input(NULL, VK_TAB);
+
     uint32_t* address_list = (uint32_t*)malloc(2000 * sizeof(uint32_t));
     uint32_t address_list_length = 0;
     FindAddressByValue(process_id, 0, memory_start_address, memory_end_address, map_start_address, &address_list, &address_list_length);
+
     for (size_t i = 0; i < address_list_length; i++)
     {
-      
+      uint32_t feature_0x18 = Read<uint32_t>(process_id, address_list[i] + 0x18);
+      uint32_t feature_0x20 = Read<uint32_t>(process_id, address_list[i] + 0x20);
+
+      if (feature_0x18 == tab_0x18_800x600 && feature_0x20 == tab_0x20_800x600)
+      {
+        base_address->tab_address = address_list[i];
+        break;
+      }
     }
+    
+    srand((unsigned int)time(NULL));
+    uint32_t delay_time = rand() % 300 + 300;
+    Sleep(delay_time);
+    SetForegroundWindow(hwnd);
+    keyboard_input(NULL, VK_TAB);
 
     free(address_list);
   }
-
 }
 
 std::string string_to_utf8(std::string input)

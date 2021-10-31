@@ -96,6 +96,7 @@ int main(int, char**)
   // windows set
   std::string name_list[6] = { "window1", "window2", "window3", "window4", "window5", "window6" };
   bool bring_to_front[6] = { false, false, false, false, false, false };
+  MH_BASE_ADDRESS base_address_list[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
   // Main loop
   bool done = false;
   while (!done)
@@ -159,6 +160,7 @@ int main(int, char**)
       get_map_info(mhtab_windows_handle->main_process_id_list[i], &map_index, &map_size_x, &map_size_y, &windows_size_x, &windows_size_y);
       get_player_pos(mhtab_windows_handle->main_process_id_list[i], &player_x, &player_y);
       get_click_NPC_name(mhtab_windows_handle->main_process_id_list[i], click_NPC_name);
+      initial_base_address(mhtab_windows_handle->main_process_id_list[i], mhtab_windows_handle->main_hwnd_list[i], &base_address_list[i]);
       //get_quick_mission_content(mhtab_windows_handle->main_process_id_list[i], quick_mission_content);
       ImGui::Text(u8"(%d, %d) 窗口大小(%d, %d)", mhtab_windows_handle->windows_rect[i].left, mhtab_windows_handle->windows_rect[i].top, windows_size_x, windows_size_y);
       ImGui::Text(u8"鼠标位置：(%d, %d)", mouse_x, mouse_y);
