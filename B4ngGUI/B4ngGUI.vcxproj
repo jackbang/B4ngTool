@@ -161,6 +161,7 @@
     </ClCompile>
     <ClCompile Include="UserPart\instruction.cpp" />
     <ClCompile Include="UserPart\mhfunction.cpp" />
+    <ClCompile Include="UserPart\mhui_func.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\imgui\imconfig.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="imgui_impl_win32.h" />
     <ClInclude Include="UserPart\instruction.h" />
     <ClInclude Include="UserPart\mhfunction.h" />
+    <ClInclude Include="UserPart\mhui_func.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

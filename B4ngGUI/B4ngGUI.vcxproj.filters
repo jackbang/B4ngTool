@@ -48,6 +48,9 @@
     <ClCompile Include="UserPart\mhfunction.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="UserPart\mhui_func.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui_impl_dx11.h">
@@ -81,6 +84,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\misc\offsets\offsets.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UserPart\mhui_func.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

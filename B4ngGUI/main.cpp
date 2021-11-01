@@ -22,6 +22,7 @@
 
 #include "UserPart/instruction.h"
 #include "UserPart/mhfunction.h"
+#include "UserPart/mhui_func.h"
 
 // Data
 static ID3D11Device* g_pd3dDevice = NULL;
@@ -43,7 +44,7 @@ int main(int, char**)
   //ImGui_ImplWin32_EnableDpiAwareness();
   WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("B4ngGUI"), NULL };
   ::RegisterClassEx(&wc);
-  HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("B4ngTool"), WS_OVERLAPPEDWINDOW, 100, 100, 800, 600, NULL, NULL, wc.hInstance, NULL);
+  HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("B4ngTool"), WS_OVERLAPPEDWINDOW, 100, 100, 600, 800, NULL, NULL, wc.hInstance, NULL);
 
   // Initialize Direct3D
   if (!CreateDeviceD3D(hwnd))
@@ -147,27 +148,49 @@ int main(int, char**)
       }
       int32_t mouse_x = 0;
       int32_t mouse_y = 0;
+      tagPOINT mouse_p;
       int32_t map_index = 0; 
       int32_t map_size_x = 0;
       int32_t map_size_y = 0; 
       int32_t windows_size_x = 0; 
       int32_t windows_size_y = 0;
+      uint32_t windows_moving = 0;
       float player_x = 0;
       float player_y = 0;
+      float windows_pos_x = 0;
+      float windows_pos_y = 0;
+      char quick_mission_content[1000];
       char click_NPC_name[20];
-      //char* quick_mission_content = (char*)malloc(1000 * sizeof(char));
       get_game_mouse_pos(mhtab_windows_handle->main_process_id_list[i], &mouse_x, &mouse_y);
-      get_map_info(mhtab_windows_handle->main_process_id_list[i], &map_index, &map_size_x, &map_size_y, &windows_size_x, &windows_size_y);
-      get_player_pos(mhtab_windows_handle->main_process_id_list[i], &player_x, &player_y);
+      get_map_info(mhtab_windows_handle->main_process_id_list[i], &map_index, &map_size_x, &map_size_y, &windows_size_x, &windows_size_y, &windows_pos_x, &windows_pos_y);
+      get_player_pos(mhtab_windows_handle->main_process_id_list[i], &player_x, &player_y, &windows_moving);
       get_click_NPC_name(mhtab_windows_handle->main_process_id_list[i], click_NPC_name);
       initial_base_address(mhtab_windows_handle->main_process_id_list[i], mhtab_windows_handle->main_hwnd_list[i], &base_address_list[i]);
-      //get_quick_mission_content(mhtab_windows_handle->main_process_id_list[i], quick_mission_content);
+      GetCursorPos(&mouse_p);
+      if (mouse_x < 0 || mouse_x > 1200)
+      {
+        mouse_x = mouse_p.x - mhtab_windows_handle->windows_rect[i].left;
+      }
+
+      if (mouse_y < 0 || mouse_y > 1200)
+      {
+        mouse_y = mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25;
+      }
       ImGui::Text(u8"(%d, %d) 窗口大小(%d, %d)", mhtab_windows_handle->windows_rect[i].left, mhtab_windows_handle->windows_rect[i].top, windows_size_x, windows_size_y);
-      ImGui::Text(u8"鼠标位置：(%d, %d)", mouse_x, mouse_y);
+      ImGui::Text(u8"鼠标位置：(%d, %d) 系统鼠标位置：(%d, %d)", mouse_x, mouse_y, mouse_p.x - mhtab_windows_handle->windows_rect[i].left, mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25);
       ImGui::Text(u8"地图：%d, 地图大小：(%d, %d)", map_index, map_size_x, map_size_y);
-      ImGui::Text(u8"玩家位置：(%d, %d)", (uint32_t)player_x/20, (uint32_t)(map_size_y - 10 - player_y)/20);
+      ImGui::Text(u8"玩家位置：(%d, %d) 窗口位置：(%d, %d) 是否移动中：%d", (uint32_t)player_x/20, (uint32_t)(map_size_y - 10 - player_y)/20, (uint32_t)windows_pos_x / 20, (uint32_t)(map_size_y - 10 - windows_pos_y) / 20, windows_moving);
       ImGui::Text(u8"点击的NPC为：%s", click_NPC_name);
-      //ImGui::Text(u8"任务追踪：%s", quick_mission_content);
+      ImGui::Text(u8"—————————————————————————————————");
+
+      ImGui::Text(u8"—————————————————————————————————");
+      mhmain_base_address_table(mhtab_windows_handle->main_process_id_list[i], &base_address_list[i]);
+      ImGui::Text(u8"—————————————————————————————————");
+      get_quick_mission_content(mhtab_windows_handle->main_process_id_list[i], base_address_list[i].quick_mission_address, quick_mission_content);
+      ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 450);
+      ImGui::Text(u8"任务追踪：");
+      ImGui::Text(u8"%s", quick_mission_content);
+      ImGui::PopTextWrapPos();
       ImGui::End();
 
       //free memory

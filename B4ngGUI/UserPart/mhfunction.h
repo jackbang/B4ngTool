@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+#pragma once
 typedef struct _MH_BASE_ADDRESS
 {
   uint32_t player_IP_address = NULL;
@@ -41,13 +42,13 @@ uint32_t get_address_value(uint32_t process_id, uint32_t base_address, std::vect
 
 void get_game_mouse_pos(uint32_t process_id, int32_t* mouse_x, int32_t* mouse_y);
 
-void get_map_info(uint32_t process_id, int32_t* map_index, int32_t* map_size_x, int32_t* map_size_y, int32_t* windows_size_x, int32_t* windows_size_y);
+void get_map_info(uint32_t procees_id, int32_t* map_index, int32_t* map_size_x, int32_t* map_size_y, int32_t* windows_size_x, int32_t* windows_size_y, float* windows_pos_x, float* windows_pos_y);
 
-void get_player_pos(uint32_t process_id, float* player_x, float* player_y);
+void get_player_pos(uint32_t procees_id, float* player_x, float* player_y, uint32_t* moving);
 
 void get_click_NPC_name(uint32_t process_id, char* clicked_name);
 
-void get_quick_mission_content(uint32_t process_id, char* mission_content);
+void get_quick_mission_content(uint32_t process_id, uint32_t quick_mission_address, char* mission_content);
 
 
 /*
