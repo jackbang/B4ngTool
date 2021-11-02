@@ -50,6 +50,8 @@ void get_click_NPC_name(uint32_t process_id, char* clicked_name);
 
 void get_quick_mission_content(uint32_t process_id, uint32_t quick_mission_address, char* mission_content);
 
+void get_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_list);
+
 
 /*
 VK_LBUTTON

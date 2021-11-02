@@ -161,6 +161,8 @@ int main(int, char**)
       float windows_pos_y = 0;
       char quick_mission_content[1000];
       char click_NPC_name[20];
+      std::vector<CHARACTER_INFO> NPC_list;
+
       get_game_mouse_pos(mhtab_windows_handle->main_process_id_list[i], &mouse_x, &mouse_y);
       get_map_info(mhtab_windows_handle->main_process_id_list[i], &map_index, &map_size_x, &map_size_y, &windows_size_x, &windows_size_y, &windows_pos_x, &windows_pos_y);
       get_player_pos(mhtab_windows_handle->main_process_id_list[i], &player_x, &player_y, &windows_moving);
@@ -176,13 +178,17 @@ int main(int, char**)
       {
         mouse_y = mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25;
       }
+      get_nearby_NPC(mhtab_windows_handle->main_process_id_list[i], &NPC_list);
       ImGui::Text(u8"(%d, %d) 窗口大小(%d, %d)", mhtab_windows_handle->windows_rect[i].left, mhtab_windows_handle->windows_rect[i].top, windows_size_x, windows_size_y);
       ImGui::Text(u8"鼠标位置：(%d, %d) 系统鼠标位置：(%d, %d)", mouse_x, mouse_y, mouse_p.x - mhtab_windows_handle->windows_rect[i].left, mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25);
       ImGui::Text(u8"地图：%d, 地图大小：(%d, %d)", map_index, map_size_x, map_size_y);
       ImGui::Text(u8"玩家位置：(%d, %d) 窗口位置：(%d, %d) 是否移动中：%d", (uint32_t)player_x/20, (uint32_t)(map_size_y - 10 - player_y)/20, (uint32_t)windows_pos_x / 20, (uint32_t)(map_size_y - 10 - windows_pos_y) / 20, windows_moving);
       ImGui::Text(u8"点击的NPC为：%s", click_NPC_name);
       ImGui::Text(u8"—————————————————————————————————");
-
+      for (size_t idx = 0; idx < NPC_list.size(); idx++)
+      {
+        ImGui::Text(u8"%s 屏幕：(%d, %d) 地图：(%d, %d)", NPC_list[idx].character_name, NPC_list[idx].screen_pos_x, NPC_list[idx].screen_pos_y, NPC_list[idx].world_pos_x, NPC_list[idx].world_pos_y);
+      }
       ImGui::Text(u8"—————————————————————————————————");
       mhmain_base_address_table(mhtab_windows_handle->main_process_id_list[i], &base_address_list[i]);
       ImGui::Text(u8"—————————————————————————————————");

@@ -12,6 +12,17 @@ const uint32_t player_base_address = 0x01B9F900;
 const uint32_t click_NPC_base_address = 0x01BBB1E4;
 
 //
+const uint32_t NPC_start_address = 0x11F4A610;
+const uint32_t NPC_screen_pos_offset_x = 0x7C;
+const uint32_t NPC_screen_pos_offset_y = 0x80;
+const uint32_t NPC_map_pos_offset_x = 0x84;
+const uint32_t NPC_map_pos_offset_y = 0x88;
+const uint32_t NPC_id_offset = 0x8C;
+const std::vector<uint32_t> NPC_name_offsets = { 0x24, 0xC, 0x14, 0x50 };
+
+
+
+//
 const uint32_t alt_start_address = 0x11F383E8;
 
 //800x600
@@ -100,5 +111,5 @@ const std::vector<uint32_t> map_size_offset_y = { 0x58, 0x14 };
 const std::vector<uint32_t> windows_pos_offset_x = { 0xC8 };
 const std::vector<uint32_t> windows_pos_offset_y = { 0xCC };
 
-const std::vector<uint32_t> click_NPC_offset = { 0x2C, 0x78, 0x0, 0x64, 0xC, 0x60 };
+const std::vector<uint32_t> click_NPC_offset = { 0x2C, 0x6C, 0x0, 0x78, 0xC, 0x60 };
 

@@ -385,3 +385,38 @@ void get_quick_mission_content(uint32_t process_id, uint32_t quick_mission_addre
   memcpy(mission_content, utf8_content.c_str(), 1000);
 }
 
+void get_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_list)
+{
+  uint32_t* address_list = (uint32_t*)malloc(2000 * sizeof(uint32_t));
+  uint32_t address_list_length = 0;
+  FindAddressByValue(process_id, 0, memory_start_address, memory_end_address, NPC_start_address, &address_list, &address_list_length);
+  for (size_t i = 0; i < address_list_length; i++)
+  {
+    PCHARACTER_INFO temp_NPC = new CHARACTER_INFO();
+    temp_NPC->character_id = Read<int32_t>(process_id, address_list[i] + NPC_id_offset);
+    if (temp_NPC->character_id > 0x20000000)
+    {
+      temp_NPC->screen_pos_x = Read<int32_t>(process_id, address_list[i] + NPC_screen_pos_offset_x);
+      temp_NPC->screen_pos_y = Read<int32_t>(process_id, address_list[i] + NPC_screen_pos_offset_y);
+      temp_NPC->world_pos_x = Read<int32_t>(process_id, address_list[i] + NPC_map_pos_offset_x);
+      temp_NPC->world_pos_y = Read<int32_t>(process_id, address_list[i] + NPC_map_pos_offset_y);
+
+
+      uint32_t bias_1_address = Read<uint32_t>(process_id, address_list[i] + 0x24);
+      uint32_t bias_2_address = Read<uint32_t>(process_id, bias_1_address + 0xC);
+      uint32_t bias_3_address = Read<uint32_t>(process_id, bias_2_address + 0x14);
+      uint32_t bias_4_address = Read<uint32_t>(process_id, bias_3_address + 0x50);
+      for (size_t j = 0; j < 20; j++)
+      {
+        *(temp_NPC->character_name + j) = Read<char>(process_id, bias_4_address + 0x14 + j);
+      }
+      std::string utf8_content = string_to_utf8(temp_NPC->character_name);
+      memcpy(temp_NPC->character_name, utf8_content.c_str(), 20);
+      NPC_list->push_back(*temp_NPC);
+    }
+    
+  }
+
+  free(address_list);
+}
+
