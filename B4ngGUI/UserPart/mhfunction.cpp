@@ -387,6 +387,7 @@ void get_quick_mission_content(uint32_t process_id, uint32_t quick_mission_addre
 
 void get_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_list)
 {
+  NPC_list->clear();
   uint32_t* address_list = (uint32_t*)malloc(2000 * sizeof(uint32_t));
   uint32_t address_list_length = 0;
   FindAddressByValue(process_id, 0, memory_start_address, memory_end_address, NPC_start_address, &address_list, &address_list_length);
@@ -396,6 +397,7 @@ void get_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_list)
     temp_NPC->character_id = Read<int32_t>(process_id, address_list[i] + NPC_id_offset);
     if (temp_NPC->character_id > 0x20000000)
     {
+      temp_NPC->address = address_list[i];
       temp_NPC->screen_pos_x = Read<int32_t>(process_id, address_list[i] + NPC_screen_pos_offset_x);
       temp_NPC->screen_pos_y = Read<int32_t>(process_id, address_list[i] + NPC_screen_pos_offset_y);
       temp_NPC->world_pos_x = Read<int32_t>(process_id, address_list[i] + NPC_map_pos_offset_x);
@@ -406,17 +408,27 @@ void get_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_list)
       uint32_t bias_2_address = Read<uint32_t>(process_id, bias_1_address + 0xC);
       uint32_t bias_3_address = Read<uint32_t>(process_id, bias_2_address + 0x14);
       uint32_t bias_4_address = Read<uint32_t>(process_id, bias_3_address + 0x50);
-      for (size_t j = 0; j < 20; j++)
+      for (size_t j = 0; j < 30; j++)
       {
         *(temp_NPC->character_name + j) = Read<char>(process_id, bias_4_address + 0x14 + j);
       }
       std::string utf8_content = string_to_utf8(temp_NPC->character_name);
-      memcpy(temp_NPC->character_name, utf8_content.c_str(), 20);
+      memcpy(temp_NPC->character_name, utf8_content.c_str(), 30);
       NPC_list->push_back(*temp_NPC);
     }
-    
   }
-
   free(address_list);
+}
+
+void update_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_list)
+{
+  for (size_t i = 0; i < NPC_list->size(); i++)
+  {
+    uint32_t address = (*NPC_list)[i].address;
+    (*NPC_list)[i].screen_pos_x = Read<int32_t>(process_id, address + NPC_screen_pos_offset_x);
+    (*NPC_list)[i].screen_pos_y = Read<int32_t>(process_id, address + NPC_screen_pos_offset_y);
+    (*NPC_list)[i].world_pos_x = Read<int32_t>(process_id, address + NPC_map_pos_offset_x);
+    (*NPC_list)[i].world_pos_y = Read<int32_t>(process_id, address + NPC_map_pos_offset_y);
+  }
 }
 

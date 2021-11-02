@@ -28,12 +28,13 @@ typedef struct _B4NG_MEMORY
 
 typedef struct _CHARACTER_INFO
 {
+  UINT32 address;
   INT32 screen_pos_x;
   INT32 screen_pos_y;
   INT32 world_pos_x;
   INT32 world_pos_y;
   INT32 character_id;
-  char character_name[20];
+  char character_name[30];
 }CHARACTER_INFO, * PCHARACTER_INFO;
 
 typedef struct _WINDOWS_HANDLE

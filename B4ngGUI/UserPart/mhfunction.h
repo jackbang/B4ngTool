@@ -30,6 +30,25 @@ typedef struct _MH_BASE_ADDRESS
 
 }MH_BASE_ADDRESS, * PMH_BASE_ADDRESS;
 
+typedef struct _MHMAIN_TEMP_DATA
+{
+  int32_t game_mouse_x = 0;
+  int32_t game_mouse_y = 0;
+  int32_t map_index = 0;
+  int32_t map_size_x = 0;
+  int32_t map_size_y = 0;
+  int32_t windows_size_x = 0;
+  int32_t windows_size_y = 0;
+  uint32_t windows_moving = 0;
+  float player_x = 0;
+  float player_y = 0;
+  float windows_pos_x = 0;
+  float windows_pos_y = 0;
+  uint32_t temp_player_x = 0;
+  uint32_t temp_player_y = 0;
+
+}MHMAIN_TEMP_DATA, * PMHMAIN_TEMP_DATA;
+
 void keyboard_input(WORD commond_key, WORD normal_key);
 
 void initial_base_address(uint32_t process_id, HWND hwnd, PMH_BASE_ADDRESS base_address);
@@ -51,6 +70,8 @@ void get_click_NPC_name(uint32_t process_id, char* clicked_name);
 void get_quick_mission_content(uint32_t process_id, uint32_t quick_mission_address, char* mission_content);
 
 void get_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_list);
+
+void update_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_list);
 
 
 /*

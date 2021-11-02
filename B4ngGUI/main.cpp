@@ -19,6 +19,7 @@
 #include <thread>
 #include <mutex>
 #include <time.h>
+#include <math.h>
 
 #include "UserPart/instruction.h"
 #include "UserPart/mhfunction.h"
@@ -98,6 +99,13 @@ int main(int, char**)
   std::string name_list[6] = { "window1", "window2", "window3", "window4", "window5", "window6" };
   bool bring_to_front[6] = { false, false, false, false, false, false };
   MH_BASE_ADDRESS base_address_list[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
+  MHMAIN_TEMP_DATA temp_data[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
+  std::vector<CHARACTER_INFO> NPC_list_1;
+  std::vector<CHARACTER_INFO> NPC_list_2;
+  std::vector<CHARACTER_INFO> NPC_list_3;
+  std::vector<CHARACTER_INFO> NPC_list_4;
+  std::vector<CHARACTER_INFO> NPC_list_5;
+  std::vector<CHARACTER_INFO> NPC_list_6;
   // Main loop
   bool done = false;
   while (!done)
@@ -146,49 +154,91 @@ int main(int, char**)
       {
         SetForegroundWindow(mhtab_windows_handle->main_hwnd_list[i]);
       }
-      int32_t mouse_x = 0;
-      int32_t mouse_y = 0;
+
       tagPOINT mouse_p;
-      int32_t map_index = 0; 
-      int32_t map_size_x = 0;
-      int32_t map_size_y = 0; 
-      int32_t windows_size_x = 0; 
-      int32_t windows_size_y = 0;
-      uint32_t windows_moving = 0;
-      float player_x = 0;
-      float player_y = 0;
-      float windows_pos_x = 0;
-      float windows_pos_y = 0;
       char quick_mission_content[1000];
       char click_NPC_name[20];
-      std::vector<CHARACTER_INFO> NPC_list;
+      std::vector<CHARACTER_INFO>* temp_npc_list_ptr = NULL;
 
-      get_game_mouse_pos(mhtab_windows_handle->main_process_id_list[i], &mouse_x, &mouse_y);
-      get_map_info(mhtab_windows_handle->main_process_id_list[i], &map_index, &map_size_x, &map_size_y, &windows_size_x, &windows_size_y, &windows_pos_x, &windows_pos_y);
-      get_player_pos(mhtab_windows_handle->main_process_id_list[i], &player_x, &player_y, &windows_moving);
+      get_game_mouse_pos(mhtab_windows_handle->main_process_id_list[i], &(temp_data[i].game_mouse_x), &(temp_data[i].game_mouse_y));
+      get_map_info(mhtab_windows_handle->main_process_id_list[i],  
+                &(temp_data[i].map_index), &(temp_data[i].map_size_x), &(temp_data[i].map_size_y), 
+                &(temp_data[i].windows_size_x), &(temp_data[i].windows_size_y), 
+                &(temp_data[i].windows_pos_x), &(temp_data[i].windows_pos_y));
+      get_player_pos(mhtab_windows_handle->main_process_id_list[i], &(temp_data[i].player_x), &(temp_data[i].player_y), &(temp_data[i].windows_moving));
       get_click_NPC_name(mhtab_windows_handle->main_process_id_list[i], click_NPC_name);
       initial_base_address(mhtab_windows_handle->main_process_id_list[i], mhtab_windows_handle->main_hwnd_list[i], &base_address_list[i]);
       GetCursorPos(&mouse_p);
-      if (mouse_x < 0 || mouse_x > 1200)
+      if (temp_data[i].game_mouse_x < 0 || temp_data[i].game_mouse_x > 1200)
       {
-        mouse_x = mouse_p.x - mhtab_windows_handle->windows_rect[i].left;
+        temp_data[i].game_mouse_x = mouse_p.x - mhtab_windows_handle->windows_rect[i].left;
       }
 
-      if (mouse_y < 0 || mouse_y > 1200)
+      if (temp_data[i].game_mouse_y < 0 || temp_data[i].game_mouse_y > 1200)
       {
-        mouse_y = mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25;
+        temp_data[i].game_mouse_y = mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25;
       }
-      get_nearby_NPC(mhtab_windows_handle->main_process_id_list[i], &NPC_list);
-      ImGui::Text(u8"(%d, %d) 窗口大小(%d, %d)", mhtab_windows_handle->windows_rect[i].left, mhtab_windows_handle->windows_rect[i].top, windows_size_x, windows_size_y);
-      ImGui::Text(u8"鼠标位置：(%d, %d) 系统鼠标位置：(%d, %d)", mouse_x, mouse_y, mouse_p.x - mhtab_windows_handle->windows_rect[i].left, mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25);
-      ImGui::Text(u8"地图：%d, 地图大小：(%d, %d)", map_index, map_size_x, map_size_y);
-      ImGui::Text(u8"玩家位置：(%d, %d) 窗口位置：(%d, %d) 是否移动中：%d", (uint32_t)player_x/20, (uint32_t)(map_size_y - 10 - player_y)/20, (uint32_t)windows_pos_x / 20, (uint32_t)(map_size_y - 10 - windows_pos_y) / 20, windows_moving);
+
+      uint32_t distance = sqrt(pow((int32_t)temp_data[i].player_x - (int32_t)temp_data[i].temp_player_x, 2) +
+                               pow((int32_t)temp_data[i].player_y - (int32_t)temp_data[i].temp_player_y, 2));
+
+      switch (i)
+      {
+      case 0:
+        temp_npc_list_ptr = &NPC_list_1;
+        break;
+      case 1:
+        temp_npc_list_ptr = &NPC_list_2;
+        break;
+      case 2:
+        temp_npc_list_ptr = &NPC_list_3;
+        break;
+      case 3:
+        temp_npc_list_ptr = &NPC_list_4;
+        break;
+      case 4:
+        temp_npc_list_ptr = &NPC_list_5;
+        break;
+      case 5:
+        temp_npc_list_ptr = &NPC_list_6;
+        break;
+      default:
+        break;
+      }
+
+      if (distance > 100)
+      {
+        temp_data[i].temp_player_x = temp_data[i].player_x;
+        temp_data[i].temp_player_y = temp_data[i].player_y;
+        get_nearby_NPC(mhtab_windows_handle->main_process_id_list[i], temp_npc_list_ptr);
+        
+      }
+      else
+      {
+        update_nearby_NPC(mhtab_windows_handle->main_process_id_list[i], temp_npc_list_ptr);
+      }
+      
+
+
+      ImGui::Text(u8"(%d, %d) 窗口大小(%d, %d)", mhtab_windows_handle->windows_rect[i].left, mhtab_windows_handle->windows_rect[i].top, temp_data[i].windows_size_x, temp_data[i].windows_size_y);
+      ImGui::Text(u8"鼠标位置：(%d, %d) 系统鼠标位置：(%d, %d)", 
+            temp_data[i].game_mouse_x, temp_data[i].game_mouse_y, 
+            mouse_p.x - mhtab_windows_handle->windows_rect[i].left, mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25);
+      ImGui::Text(u8"地图：%d, 地图大小：(%d, %d)", temp_data[i].map_index, temp_data[i].map_size_x, temp_data[i].map_size_y);
+      ImGui::Text(u8"玩家位置：(%d, %d) 窗口位置：(%d, %d) 是否移动中：%d", 
+        (uint32_t)temp_data[i].player_x/20, (uint32_t)(temp_data[i].map_size_y - 10 - temp_data[i].player_y)/20,
+        (uint32_t)temp_data[i].windows_pos_x / 20, (uint32_t)(temp_data[i].map_size_y - 10 - temp_data[i].windows_pos_y) / 20, temp_data[i].windows_moving);
       ImGui::Text(u8"点击的NPC为：%s", click_NPC_name);
       ImGui::Text(u8"—————————————————————————————————");
-      for (size_t idx = 0; idx < NPC_list.size(); idx++)
+      
+      for (size_t idx = 0; idx < temp_npc_list_ptr->size(); idx++)
       {
-        ImGui::Text(u8"%s 屏幕：(%d, %d) 地图：(%d, %d)", NPC_list[idx].character_name, NPC_list[idx].screen_pos_x, NPC_list[idx].screen_pos_y, NPC_list[idx].world_pos_x, NPC_list[idx].world_pos_y);
+        ImGui::Text(u8"%s 屏幕：(%d, %d) 地图：(%d, %d)", 
+          (*temp_npc_list_ptr)[idx].character_name, 
+          (*temp_npc_list_ptr)[idx].screen_pos_x, (*temp_npc_list_ptr)[idx].screen_pos_y, 
+          (*temp_npc_list_ptr)[idx].world_pos_x, (*temp_npc_list_ptr)[idx].world_pos_y);
       }
+
       ImGui::Text(u8"—————————————————————————————————");
       mhmain_base_address_table(mhtab_windows_handle->main_process_id_list[i], &base_address_list[i]);
       ImGui::Text(u8"—————————————————————————————————");
