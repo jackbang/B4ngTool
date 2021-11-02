@@ -351,7 +351,7 @@ void get_click_NPC_name(uint32_t process_id, char* clicked_name)
   uint32_t clicked_name_base = get_address_value(process_id, click_NPC_base_address, click_NPC_offset);
   for (size_t i = 0; i < 20; i++)
   {
-    clicked_name[i] = Read<char>(process_id, clicked_name_base + 0x14 + i);
+    clicked_name[i] = Read<char>(process_id, clicked_name_base + 0x74 + i);
   }
   std::string utf8_name = string_to_utf8(clicked_name);
   memcpy(clicked_name, utf8_name.c_str(), 20);

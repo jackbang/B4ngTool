@@ -5,11 +5,11 @@ const uint32_t memory_start_address = 0x01F14000;
 const uint32_t memory_end_address = 0x4AD00000;
 
 //static address
-const uint32_t mouse_base_address = 0x1B787A4 + 0x2020;
-const uint32_t map_base_address = 0x19F2030 + 0x2020;
-const uint32_t windows_moving_base_address = 0x19F2030 + 0x2020 + 0x14;
-const uint32_t player_base_address = 0x1B788E8 + 0x2020;
-const uint32_t click_NPC_base_address = 0x01B941D4 + 0x2020;
+const uint32_t mouse_base_address = 0x1B787A4 + 0x2020 + 0x24FF8;
+const uint32_t map_base_address = 0x01A19050;
+const uint32_t windows_moving_base_address = 0x01A19050 + 0x14;
+const uint32_t player_base_address = 0x01B9F900;
+const uint32_t click_NPC_base_address = 0x01BBB1E4;
 
 //
 const uint32_t alt_start_address = 0x11F383E8;
@@ -22,8 +22,8 @@ const uint32_t alt_w_0x18_800x600 = 496;
 const uint32_t alt_w_0x1C_800x600 = 60;
 const uint32_t alt_w_0x20_800x600 = 304;
 
-const uint32_t alt_q_new_0x18_800x600 = 187;
-const uint32_t alt_q_new_0x20_800x600 = 425;
+const uint32_t alt_q_new_0x18_800x600 = 185;
+const uint32_t alt_q_new_0x20_800x600 = 430;
 
 const uint32_t alt_q_ori_0x18_800x600 = 110;
 const uint32_t alt_q_ori_0x20_800x600 = 555;
@@ -100,5 +100,5 @@ const std::vector<uint32_t> map_size_offset_y = { 0x58, 0x14 };
 const std::vector<uint32_t> windows_pos_offset_x = { 0xC8 };
 const std::vector<uint32_t> windows_pos_offset_y = { 0xCC };
 
-const std::vector<uint32_t> click_NPC_offset = { 0x2C, 0x78, 0x0, 0x64, 0xC, 0x50, 0x8, 0x20 };
+const std::vector<uint32_t> click_NPC_offset = { 0x2C, 0x78, 0x0, 0x64, 0xC, 0x60 };
 
