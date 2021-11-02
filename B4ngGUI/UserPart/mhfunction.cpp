@@ -425,10 +425,19 @@ void update_nearby_NPC(uint32_t process_id, std::vector<CHARACTER_INFO>* NPC_lis
   for (size_t i = 0; i < NPC_list->size(); i++)
   {
     uint32_t address = (*NPC_list)[i].address;
-    (*NPC_list)[i].screen_pos_x = Read<int32_t>(process_id, address + NPC_screen_pos_offset_x);
-    (*NPC_list)[i].screen_pos_y = Read<int32_t>(process_id, address + NPC_screen_pos_offset_y);
-    (*NPC_list)[i].world_pos_x = Read<int32_t>(process_id, address + NPC_map_pos_offset_x);
-    (*NPC_list)[i].world_pos_y = Read<int32_t>(process_id, address + NPC_map_pos_offset_y);
+    (*NPC_list)[i].character_id = Read<int32_t>(process_id, address + NPC_id_offset);
+    if ((*NPC_list)[i].character_id > 0x20000000) 
+    {
+      (*NPC_list)[i].screen_pos_x = Read<int32_t>(process_id, address + NPC_screen_pos_offset_x);
+      (*NPC_list)[i].screen_pos_y = Read<int32_t>(process_id, address + NPC_screen_pos_offset_y);
+      (*NPC_list)[i].world_pos_x = Read<int32_t>(process_id, address + NPC_map_pos_offset_x);
+      (*NPC_list)[i].world_pos_y = Read<int32_t>(process_id, address + NPC_map_pos_offset_y);
+    }
+    else
+    {
+      (*NPC_list).erase((*NPC_list).begin() + i);
+      i--;
+    }
   }
 }
 
