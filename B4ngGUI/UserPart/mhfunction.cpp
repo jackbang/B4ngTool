@@ -1,8 +1,89 @@
 #include "mhfunction.h"
 #include <stdlib.h>
 #include <time.h> 
+#include <math.h>
 
 #include "../misc/offsets/offsets.h"
+
+void mouse_move(uint32_t* target_x, uint32_t* target_y, PMHMAIN_TEMP_DATA base_data, HWND hwnd, RECT rect)
+{
+  if (*target_x > 0 && *target_y > 0)
+  {
+    tagPOINT mouse_p;
+    GetCursorPos(&mouse_p);
+    SetForegroundWindow(hwnd);
+    srand((unsigned int)time(NULL));
+    if (mouse_p.x < rect.left && mouse_p.y < rect.top)
+    {
+      uint32_t first_target_x = rand() % 300 + 100;
+      uint32_t first_target_y = rand() % 200 + 100;
+      for (size_t i = 0; i < 20; i++)
+      {
+        INPUT* input = (INPUT*)malloc(1 * sizeof(INPUT));
+        input[0].type = INPUT_MOUSE;
+        MOUSEINPUT mi;
+        mi.dx = (int)(rect.left + (int32_t)first_target_x - mouse_p.x) / 20;
+        mi.dy = (int)(rect.top + (int32_t)first_target_y - mouse_p.y) / 20;
+        mi.dwFlags = MOUSEEVENTF_MOVE;
+        mi.time = NULL;
+        input[0].mi = mi;
+        SendInput(1, input, sizeof(INPUT));
+        Sleep(10);
+        free(input);
+      }
+    }
+
+    while (fabs(base_data->game_mouse_x - *target_x) >= 3 || fabs(base_data->game_mouse_y - *target_y) >= 3)
+    {
+      if (fabs(base_data->game_mouse_x - *target_x) > 10 || fabs(base_data->game_mouse_y - *target_y) > 10)
+      {
+        int32_t rand_step = rand() % 5 + 5;
+
+        INPUT* input = (INPUT*)malloc(1 * sizeof(INPUT));
+        input[0].type = INPUT_MOUSE;
+        input[0].mi.dx = ((int)*target_x - base_data->game_mouse_x) % rand_step;
+        input[0].mi.dx = input[0].mi.dx >> 1;
+        input[0].mi.dy = ((int)*target_y - base_data->game_mouse_y) % rand_step;
+        input[0].mi.dy = input[0].mi.dy >> 1;
+        input[0].mi.dwFlags = MOUSEEVENTF_MOVE;
+        SendInput(1, input, sizeof(INPUT));
+        Sleep(10);
+        free(input);
+      }
+      else
+      {
+        uint32_t x_step = 0;
+        uint32_t y_step = 0;
+        if (base_data->game_mouse_x - *target_x > 0)
+        {
+          x_step = -1;
+        }
+        else if (base_data->game_mouse_x - *target_x < 0)
+        {
+          x_step = 1;
+        }
+
+        if (base_data->game_mouse_y - *target_y > 0)
+        {
+          y_step = -1;
+        }
+        else if (base_data->game_mouse_y - *target_y < 0)
+        {
+          y_step = 1;
+        }
+
+        INPUT* input = (INPUT*)malloc(1 * sizeof(INPUT));
+        input[0].type = INPUT_MOUSE;
+        input[0].mi.dx = x_step;
+        input[0].mi.dy = y_step;
+        input[0].mi.dwFlags = MOUSEEVENTF_MOVE;
+        SendInput(1, input, sizeof(INPUT));
+        Sleep(20);
+        free(input);
+      }
+    }
+  }
+}
 
 void keyboard_input(WORD commond_key, WORD normal_key)
 {

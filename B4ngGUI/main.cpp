@@ -100,6 +100,8 @@ int main(int, char**)
   bool bring_to_front[6] = { false, false, false, false, false, false };
   MH_BASE_ADDRESS base_address_list[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
   MHMAIN_TEMP_DATA temp_data[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
+  uint32_t target_x[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
+  uint32_t target_y[6] = { NULL, NULL, NULL, NULL, NULL, NULL };
   std::vector<CHARACTER_INFO> NPC_list_1;
   std::vector<CHARACTER_INFO> NPC_list_2;
   std::vector<CHARACTER_INFO> NPC_list_3;
@@ -155,6 +157,11 @@ int main(int, char**)
         SetForegroundWindow(mhtab_windows_handle->main_hwnd_list[i]);
       }
 
+      ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 200);
+      ImGui::InputScalar(u8"X位置", ImGuiDataType_U32, &target_x[i], NULL, NULL, "%u");
+      ImGui::InputScalar(u8"Y位置", ImGuiDataType_U32, &target_y[i], NULL, NULL, "%u");
+      ImGui::PopTextWrapPos();
+
       tagPOINT mouse_p;
       char quick_mission_content[1000];
       char click_NPC_name[20];
@@ -177,6 +184,12 @@ int main(int, char**)
       if (temp_data[i].game_mouse_y < 0 || temp_data[i].game_mouse_y > 1200)
       {
         temp_data[i].game_mouse_y = mouse_p.y - mhtab_windows_handle->windows_rect[i].top - 25;
+      }
+
+      if (ImGui::Button(u8"移动鼠标", ImVec2(100, 20)))
+      {
+        std::thread mouse_move_thread(mouse_move, &target_x[i], &target_y[i], &temp_data[i], mhtab_windows_handle->main_hwnd_list[i], mhtab_windows_handle->windows_rect[i]);
+        mouse_move_thread.detach();
       }
 
       uint32_t distance = sqrt(pow((int32_t)temp_data[i].player_x - (int32_t)temp_data[i].temp_player_x, 2) +

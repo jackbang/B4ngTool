@@ -49,6 +49,8 @@ typedef struct _MHMAIN_TEMP_DATA
 
 }MHMAIN_TEMP_DATA, * PMHMAIN_TEMP_DATA;
 
+void mouse_move(uint32_t* target_x, uint32_t* target_y, PMHMAIN_TEMP_DATA base_data, HWND hwnd, RECT rect);
+
 void keyboard_input(WORD commond_key, WORD normal_key);
 
 void initial_base_address(uint32_t process_id, HWND hwnd, PMH_BASE_ADDRESS base_address);
