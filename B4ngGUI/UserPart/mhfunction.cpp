@@ -1,7 +1,7 @@
 #include "mhfunction.h"
 #include <stdlib.h>
 #include <time.h> 
-#include <math.h>
+#include <stdlib.h>
 
 #include "../misc/offsets/offsets.h"
 
@@ -17,7 +17,8 @@ void mouse_move(uint32_t* target_x, uint32_t* target_y, PMHMAIN_TEMP_DATA base_d
     {
       uint32_t first_target_x = rand() % 300 + 100;
       uint32_t first_target_y = rand() % 200 + 100;
-      while (mouse_p.x != rect.left + first_target_x || mouse_p.y != rect.top + first_target_y)
+      while (mouse_p.x <= rect.left + first_target_x - 20 || mouse_p.x >= rect.left + first_target_x + 20 || 
+             mouse_p.y <= rect.top + first_target_y - 20 || mouse_p.y >= rect.top + first_target_y + 20)
       {
         INPUT* input = (INPUT*)malloc(1 * sizeof(INPUT));
         input[0].type = INPUT_MOUSE;
@@ -30,10 +31,10 @@ void mouse_move(uint32_t* target_x, uint32_t* target_y, PMHMAIN_TEMP_DATA base_d
         Sleep(20);
       }
     }
-    printf("%d, %d", (uint32_t)fabs(base_data->game_mouse_x - (int32_t)*target_x), (uint32_t)fabs(base_data->game_mouse_x - (int32_t)*target_x));
-    while ((uint32_t)fabs(base_data->game_mouse_x - (int32_t)*target_x) > 2 || (uint32_t)fabs(base_data->game_mouse_y - (int32_t)*target_y) > 2)
+    //printf("%d, %d", abs(base_data->game_mouse_x - (int32_t)*target_x), abs(base_data->game_mouse_x - (int32_t)*target_x));
+    while (abs(base_data->game_mouse_x - (int32_t)*target_x) > 2 || abs(base_data->game_mouse_y - (int32_t)*target_y) > 2)
     {
-      if ((uint32_t)fabs(base_data->game_mouse_x - (int32_t)*target_x) > 10 || (uint32_t)fabs(base_data->game_mouse_y - (int32_t)*target_y) > 10)
+      if (abs(base_data->game_mouse_x - (int32_t)*target_x) > 10 || abs(base_data->game_mouse_y - (int32_t)*target_y) > 10)
       {
         int32_t rand_step = rand() % 10 + 10;
 
@@ -50,7 +51,7 @@ void mouse_move(uint32_t* target_x, uint32_t* target_y, PMHMAIN_TEMP_DATA base_d
       }
       else
       {
-        printf("Î¢µ÷£¡\r\n");
+        //printf("Î¢µ÷£¡\r\n");
         uint32_t x_step = 0;
         uint32_t y_step = 0;
         if (base_data->game_mouse_x - *target_x > 0)
